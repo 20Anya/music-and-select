@@ -1,9 +1,6 @@
 --Название и продолжительность самого длительного трека.
-select max(length_of_the_song), t.name
-from tracks t
-group by t.name
-order by max desc
-limit 1;
+select length_of_the_song, name from tracks
+where length_of_the_song = (select max(length_of_the_song) from tracks);
 
 --Название треков, продолжительность которых не менее 3,5 минут.
 select length_of_the_song, name
@@ -44,17 +41,19 @@ group by a.name
 order by traks_ desc
 
 --Все исполнители, которые не выпустили альбомы в 2020 году.
-select p.name from performers p 
+select p.name from performers p
+where p.id not in(
+select p.id from performers
 join performersalbums p2 on p.id = p2.performers_id
-join albums a on a.id = p2.albums_id 
-where a.year_of_release != 2020;
+join albums a on a.id = p2.albums_id
+where year_of_release = 2020);
 
 --Названия сборников, в которых присутствует конкретный исполнитель (выберите его сами).
-select c.name from collections c
+select distinct c.name from collections c
 join collectiontracks c2 ON c.id = c2.collection_id
 join tracks t on c2.tracks_id = t.id 
 join albums a on a.id = t.album_id
 join performersalbums p2 on a.id = p2.albums_id 
 join performers p on p.id = p2.performers_id
 where p.name = 'Park Jimin'
-group by c.name
+
